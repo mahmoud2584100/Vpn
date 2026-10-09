@@ -1,0 +1,44 @@
+2026-10-09 20:18:53,194 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:53,194 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:53,256 [INFO] ✅ WS [ns8lNBL5] uuid=b92a492f… ip=127.0.0.1 total=1
+2026-10-09 20:18:53,256 [INFO] ➡️  [ns8lNBL5] → 127.0.0.1:46617
+2026-10-09 20:18:53,260 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,262 [INFO] 🔌 WS closed [ns8lNBL5] total=0
+2026-10-09 20:18:53,267 [INFO] ✅ WS [oGv7RWgn] uuid=b92a492f… ip=127.0.0.1 total=1
+2026-10-09 20:18:53,267 [INFO] ➡️  [oGv7RWgn] → 127.0.0.1:46617
+2026-10-09 20:18:53,268 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,270 [INFO] 🔌 WS closed [oGv7RWgn] total=0
+2026-10-09 20:18:53,273 [INFO] ✅ WS [n9W4qmSl] uuid=b92a492f… ip=127.0.0.1 total=1
+2026-10-09 20:18:53,273 [INFO] ➡️  [n9W4qmSl] → 127.0.0.1:46617
+2026-10-09 20:18:53,275 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,276 [INFO] 🔌 WS closed [n9W4qmSl] total=0
+2026-10-09 20:18:53,279 [INFO] ✅ WS [9qITBRDz] uuid=b92a492f… ip=127.0.0.1 total=1
+2026-10-09 20:18:53,279 [INFO] ➡️  [9qITBRDz] → 127.0.0.1:46617
+2026-10-09 20:18:53,281 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,283 [INFO] 🔌 WS closed [9qITBRDz] total=0
+2026-10-09 20:18:53,286 [INFO] ✅ WS [PFVR6Tgi] uuid=b92a492f… ip=127.0.0.1 total=1
+2026-10-09 20:18:53,286 [INFO] ➡️  [PFVR6Tgi] → 127.0.0.1:46617
+2026-10-09 20:18:53,287 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,289 [INFO] 🔌 WS closed [PFVR6Tgi] total=0
+ws: Xray 26.3.27, 5 x 1 MiB HTTP downloads, bytes match
+2026-10-09 20:18:53,328 [INFO] new XHTTP[auto] session [12d09905] uuid=b92a492f ip=127.0.0.1
+2026-10-09 20:18:53,330 [INFO] connect XHTTP[packet-up] [12d09905] -> 127.0.0.1:46617
+2026-10-09 20:18:53,332 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,334 [INFO] closed XHTTP[packet-up] [12d09905] total=0
+2026-10-09 20:18:53,336 [INFO] new XHTTP[auto] session [b0094acb] uuid=b92a492f ip=127.0.0.1
+2026-10-09 20:18:53,337 [INFO] connect XHTTP[packet-up] [b0094acb] -> 127.0.0.1:46617
+2026-10-09 20:18:53,339 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,340 [INFO] closed XHTTP[packet-up] [b0094acb] total=0
+2026-10-09 20:18:53,342 [INFO] new XHTTP[auto] session [6bce8980] uuid=b92a492f ip=127.0.0.1
+2026-10-09 20:18:53,343 [INFO] connect XHTTP[packet-up] [6bce8980] -> 127.0.0.1:46617
+2026-10-09 20:18:53,344 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,346 [INFO] closed XHTTP[packet-up] [6bce8980] total=0
+2026-10-09 20:18:53,348 [INFO] new XHTTP[auto] session [51f16ad6] uuid=b92a492f ip=127.0.0.1
+2026-10-09 20:18:53,349 [INFO] connect XHTTP[packet-up] [51f16ad6] -> 127.0.0.1:46617
+2026-10-09 20:18:53,351 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,352 [INFO] closed XHTTP[packet-up] [51f16ad6] total=0
+2026-10-09 20:18:53,353 [INFO] new XHTTP[auto] session [958af741] uuid=b92a492f ip=127.0.0.1
+2026-10-09 20:18:53,354 [INFO] connect XHTTP[packet-up] [958af741] -> 127.0.0.1:46617
+2026-10-09 20:18:53,356 [INFO] HTTP Request: GET http://127.0.0.1:46617/test "HTTP/1.1 200 OK"
+2026-10-09 20:18:53,357 [INFO] closed XHTTP[packet-up] [958af741] total=0
+xhttp: Xray 26.3.27, 5 x 1 MiB HTTP downloads, bytes match

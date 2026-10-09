@@ -53,6 +53,8 @@ input:focus+.ic{color:var(--accent)}
 .footer a{color:var(--accent);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
+<script src="/static/qrcode.min.js"></script>
+<script src="/static/qr-local.js"></script>
 </head>
 <body>
 <div class="bg"></div><div class="grid"></div>
@@ -707,6 +709,8 @@ a{color:inherit;text-decoration:none}
 .cfgdash-ip-row .ip{font-family:ui-monospace,monospace;font-size:12px;color:var(--t1);display:flex;align-items:center;gap:7px}
 .cfgdash-ip-meta{display:flex;align-items:center;gap:12px;font-size:10.5px;color:var(--t3);margin-right:auto;flex-wrap:wrap}
 </style>
+<script src="/static/qrcode.min.js"></script>
+<script src="/static/qr-local.js"></script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -1273,7 +1277,7 @@ function expChip(exp,expired){
   return `<span class="exp-chip ec-ok"><i class="ti ti-calendar-check"></i> ${toFa(d)} روز مانده</span>`;
 }
 function protoBadge(p){
-  const m={'vless-ws':['VLESS · WS','pc-ws'],'xhttp':['XHTTP · auto','pc-xhttp']};
+  const m={'vless-ws':['VLESS · WS','pc-ws'],'xhttp':['XHTTP · packet-up','pc-xhttp']};
   const v=m[p]||m['vless-ws'];
   return `<span class="proto-chip ${v[1]}">${v[0]}</span>`;
 }
@@ -1607,7 +1611,7 @@ async function deleteLink(uuid){
   if(!confirm('حذف این کانفیگ؟'))return;
   try{const r=await authF('/api/links/'+uuid,{method:'DELETE'});if(!r.ok)throw new Error();toast('حذف شد ✓','ok');loadLinks();}catch(e){toast('خطا','err')}
 }
-function showQR(link){window.open('https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(link),'_blank')}
+function showQR(link){showLocalQR(link)}
 function parseBytesFmt(s){
   if(!s)return 0;
   const m=String(s).match(/([\d.]+)\s*([A-Za-z]+)/);
@@ -2100,6 +2104,8 @@ html,body{{min-height:100%;background:var(--bg);font-family:var(--serif);color:v
 }}
 @keyframes spin{{to{{transform:rotate(360deg)}}}}
 </style>
+<script src="/static/qrcode.min.js"></script>
+<script src="/static/qr-local.js"></script>
 </head>
 <body>
 <div class="bg-fx"></div><div class="grid-fx"></div>
@@ -2148,13 +2154,13 @@ function esc(s){{return String(s||'').replace(/[&<>"']/g,c=>({{'&':'&amp;','<':'
 function fmtB(b){{if(!b||b===0)return '0 B';if(b<1024)return b+' B';if(b<1024**2)return (b/1024).toFixed(1)+' KB';if(b<1024**3)return (b/1024**2).toFixed(2)+' MB';return (b/1024**3).toFixed(2)+' GB'}}
 function toFa(n){{return String(n).replace(/\\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d])}}
 function protoChip(p){{
-  if(p&&p.startsWith('xhttp'))return '<span class="proto-chip pc-xhttp"><i class="ti ti-bolt"></i> XHTTP · auto</span>';
+  if(p&&p.startsWith('xhttp'))return '<span class="proto-chip pc-xhttp"><i class="ti ti-bolt"></i> XHTTP · packet-up</span>';
   return '<span class="proto-chip pc-ws">VLESS · WS</span>';
 }}
 
 function showQR(label,link){{
   document.getElementById('qr-label').textContent=label;
-  document.getElementById('qr-img').src='https://api.qrserver.com/v1/create-qr-code/?size=260x260&data='+encodeURIComponent(link);
+  document.getElementById('qr-img').src=localQRData(link);
   document.getElementById('qr-modal').classList.add('open');
 }}
 

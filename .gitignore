@@ -1,0 +1,6 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+x4g_state.json
+x4g_secret.key

@@ -1,0 +1,109 @@
+test_websocket_keeps_http11_default (test_config.LinkGenerationTests.test_websocket_keeps_http11_default) ... ok
+test_xhttp_defaults_to_proxy_compatible_packet_up (test_config.LinkGenerationTests.test_xhttp_defaults_to_proxy_compatible_packet_up) ... ok
+test_disabled_xhttp_link_cannot_forward_small_unbatched_chunks (test_transport.AdditionalSecurityTests.test_disabled_xhttp_link_cannot_forward_small_unbatched_chunks) ... ok
+test_idle_connected_session_is_reaped (test_transport.AdditionalSecurityTests.test_idle_connected_session_is_reaped) ... 2026-10-09 20:18:48,280 [INFO] new XHTTP[packet-up] session [idle-tes] uuid=f0c3846e ip=local-test
+2026-10-09 20:18:48,291 [INFO] closed XHTTP[packet-up] [idle-tes] total=0
+ok
+test_password_hashing_and_legacy_migration_compatibility (test_transport.AdditionalSecurityTests.test_password_hashing_and_legacy_migration_compatibility) ... 2026-10-09 20:18:48,508 [WARNING] Executing <Task finished name='Task-13' coro=<AdditionalSecurityTests.test_password_hashing_and_legacy_migration_compatibility() done, defined at /workspace/scratch/ec84b1ff5ad9/Vpn/test_transport.py:244> result=None created at /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:100> took 0.194 seconds
+ok
+test_private_destinations_blocked_by_default (test_transport.AdditionalSecurityTests.test_private_destinations_blocked_by_default) ... ok
+test_real_vless_version_and_identity (test_transport.ParserSecurityTests.test_real_vless_version_and_identity) ... ok
+test_udp_mux_and_zero_port_are_not_treated_as_tcp (test_transport.ParserSecurityTests.test_udp_mux_and_zero_port_are_not_treated_as_tcp) ... ok
+test_chunk_larger_than_bucket_finishes (test_transport.ThrottleTests.test_chunk_larger_than_bucket_finishes) ... ok
+test_auth_proxy_cookie_and_persistence (test_transport.TransportTests.test_auth_proxy_cookie_and_persistence) ... 2026-10-09 20:18:49,607 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:49,609 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:49,609 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 41761)>,)> is serving
+2026-10-09 20:18:49,621 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 46695)>,)> is serving
+2026-10-09 20:18:49,640 [INFO] HTTP Request: GET http://127.0.0.1:41761/proxy/example.com "HTTP/1.1 401 Unauthorized"
+2026-10-09 20:18:49,642 [INFO] HTTP Request: GET http://127.0.0.1:41761/api/links "HTTP/1.1 401 Unauthorized"
+2026-10-09 20:18:49,734 [INFO] HTTP Request: POST http://127.0.0.1:41761/api/login "HTTP/1.1 200 OK"
+2026-10-09 20:18:49,778 [INFO] HTTP Request: GET http://127.0.0.1:41761/api/links "HTTP/1.1 200 OK"
+2026-10-09 20:18:49,822 [INFO] State loaded: 1 links, 0 subs
+ok
+test_duplicate_negative_and_oversized_packets (test_transport.TransportTests.test_duplicate_negative_and_oversized_packets) ... 2026-10-09 20:18:49,990 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:49,990 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:49,990 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 38725)>,)> is serving
+2026-10-09 20:18:50,000 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 39977)>,)> is serving
+2026-10-09 20:18:50,008 [INFO] new XHTTP[packet-up] session [bounded] uuid=3b4ac97f ip=127.0.0.1
+2026-10-09 20:18:50,009 [INFO] HTTP Request: POST http://127.0.0.1:38725/xhttp-siz10/3b4ac97f-a432-1bb0-2765-2761e2c178c9/bounded/-1 "HTTP/1.1 409 Conflict"
+2026-10-09 20:18:50,012 [INFO] HTTP Request: POST http://127.0.0.1:38725/xhttp-siz10/3b4ac97f-a432-1bb0-2765-2761e2c178c9/bounded/1 "HTTP/1.1 200 OK"
+2026-10-09 20:18:50,058 [INFO] HTTP Request: POST http://127.0.0.1:38725/xhttp-siz10/3b4ac97f-a432-1bb0-2765-2761e2c178c9/bounded/1 "HTTP/1.1 409 Conflict"
+2026-10-09 20:18:50,104 [INFO] closed XHTTP[packet-up] [bounded] total=0
+2026-10-09 20:18:50,105 [INFO] HTTP Request: POST http://127.0.0.1:38725/xhttp-siz10/3b4ac97f-a432-1bb0-2765-2761e2c178c9/bounded/0 "HTTP/1.1 413 Request Entity Too Large"
+ok
+test_large_first_packet_is_allowed (test_transport.TransportTests.test_large_first_packet_is_allowed) ... 2026-10-09 20:18:50,345 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:50,346 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:50,346 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 43553)>,)> is serving
+2026-10-09 20:18:50,355 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 40165)>,)> is serving
+2026-10-09 20:18:50,362 [INFO] new XHTTP[packet-up] session [large] uuid=852fc4f5 ip=127.0.0.1
+2026-10-09 20:18:50,365 [INFO] connect XHTTP[packet-up] [large] -> 127.0.0.1:40165
+2026-10-09 20:18:50,366 [INFO] HTTP Request: POST http://127.0.0.1:43553/xhttp-siz10/852fc4f5-650b-2b86-a8d4-fa5ff87fe9ee/large/0 "HTTP/1.1 200 OK"
+2026-10-09 20:18:50,370 [INFO] closed XHTTP[packet-up] [large] total=0
+ok
+test_quota_does_not_overshoot (test_transport.TransportTests.test_quota_does_not_overshoot) ... 2026-10-09 20:18:50,600 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:50,601 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:50,602 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 40485)>,)> is serving
+2026-10-09 20:18:50,611 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 42807)>,)> is serving
+ok
+test_session_is_bound_to_uuid_and_auth (test_transport.TransportTests.test_session_is_bound_to_uuid_and_auth) ... 2026-10-09 20:18:50,857 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:50,859 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:50,859 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 37059)>,)> is serving
+2026-10-09 20:18:50,868 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 34583)>,)> is serving
+2026-10-09 20:18:50,869 [INFO] new XHTTP[packet-up] session [owned] uuid=ea40dada ip=test
+2026-10-09 20:18:50,875 [INFO] HTTP Request: POST http://127.0.0.1:37059/xhttp-siz10/001e2cf8-eb0c-3327-a58e-81fa3f8ead11/owned/0 "HTTP/1.1 403 Forbidden"
+2026-10-09 20:18:50,877 [INFO] HTTP Request: POST http://127.0.0.1:37059/xhttp-siz10/not-a-link/new/0 "HTTP/1.1 403 Forbidden"
+2026-10-09 20:18:50,920 [INFO] closed XHTTP[packet-up] [owned] total=0
+ok
+test_websocket_fragmented_header_and_large_transfer (test_transport.TransportTests.test_websocket_fragmented_header_and_large_transfer) ... 2026-10-09 20:18:51,113 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:51,114 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:51,114 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 52589)>,)> is serving
+2026-10-09 20:18:51,125 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 38821)>,)> is serving
+2026-10-09 20:18:51,142 [INFO] ✅ WS [sDKVu7RM] uuid=97b2b96e… ip=127.0.0.1 total=1
+2026-10-09 20:18:51,146 [INFO] ➡️  [sDKVu7RM] → 127.0.0.1:38821
+2026-10-09 20:18:51,325 [INFO] 🔌 WS closed [sDKVu7RM] total=0
+ok
+test_websocket_wrong_uuid_rejected (test_transport.TransportTests.test_websocket_wrong_uuid_rejected) ... 2026-10-09 20:18:51,595 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:51,596 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:51,596 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 55939)>,)> is serving
+2026-10-09 20:18:51,606 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 38775)>,)> is serving
+2026-10-09 20:18:51,611 [INFO] ✅ WS [AQ0iGNIy] uuid=05d51fca… ip=127.0.0.1 total=1
+2026-10-09 20:18:51,613 [ERROR] WS error [AQ0iGNIy]: VLESS UUID does not match the authorized link
+2026-10-09 20:18:51,613 [INFO] 🔌 WS closed [AQ0iGNIy] total=0
+ok
+test_xhttp_out_of_order_split_header (test_transport.TransportTests.test_xhttp_out_of_order_split_header) ... 2026-10-09 20:18:51,851 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:51,851 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:51,852 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 41671)>,)> is serving
+2026-10-09 20:18:51,862 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 41943)>,)> is serving
+2026-10-09 20:18:51,867 [INFO] new XHTTP[packet-up] session [ordered] uuid=1fe79cf1 ip=127.0.0.1
+2026-10-09 20:18:51,868 [INFO] HTTP Request: POST http://127.0.0.1:41671/xhttp-siz10/1fe79cf1-7a0d-cac0-eefd-ba84e26dc1eb/ordered/1 "HTTP/1.1 200 OK"
+2026-10-09 20:18:51,872 [INFO] connect XHTTP[packet-up] [ordered] -> 127.0.0.1:41943
+2026-10-09 20:18:51,874 [INFO] HTTP Request: POST http://127.0.0.1:41671/xhttp-siz10/1fe79cf1-7a0d-cac0-eefd-ba84e26dc1eb/ordered/0 "HTTP/1.1 200 OK"
+2026-10-09 20:18:51,918 [INFO] HTTP Request: GET http://127.0.0.1:41671/xhttp-siz10/1fe79cf1-7a0d-cac0-eefd-ba84e26dc1eb/ordered "HTTP/1.1 200 OK"
+ok
+test_xhttp_stream_and_eof_cleanup (test_transport.TransportTests.test_xhttp_stream_and_eof_cleanup) ... 2026-10-09 20:18:52,211 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:52,211 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:52,212 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 59447)>,)> is serving
+2026-10-09 20:18:52,221 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 43221)>,)> is serving
+2026-10-09 20:18:52,227 [INFO] new XHTTP[stream-up] session [stream] uuid=562179ff ip=127.0.0.1
+2026-10-09 20:18:52,242 [INFO] connect XHTTP[stream-up] [stream] -> 127.0.0.1:43221
+2026-10-09 20:18:52,243 [INFO] HTTP Request: POST http://127.0.0.1:59447/xhttp-siz10/562179ff-9a65-9f6a-35eb-da7b86c7ea48/stream "HTTP/1.1 200 OK"
+2026-10-09 20:18:52,246 [INFO] closed XHTTP[stream-up] [stream] total=0
+ok
+test_xhttp_stream_download_before_upload (test_transport.TransportTests.test_xhttp_stream_download_before_upload) ... 2026-10-09 20:18:52,466 [INFO] Telegram bot: TELEGRAM_BOT_TOKEN تنظیم نشده، ربات غیرفعاله.
+2026-10-09 20:18:52,466 [INFO] X4G v9.8 started on port 8000
+2026-10-09 20:18:52,467 [INFO] <Server sockets=(<asyncio.TransportSocket fd=6, family=2, type=1, proto=0, laddr=('127.0.0.1', 39631)>,)> is serving
+2026-10-09 20:18:52,476 [INFO] <Server sockets=(<asyncio.TransportSocket fd=7, family=2, type=1, proto=6, laddr=('127.0.0.1', 33389)>,)> is serving
+2026-10-09 20:18:52,483 [INFO] new XHTTP[auto] session [stream-l] uuid=0a44d93e ip=127.0.0.1
+2026-10-09 20:18:52,485 [INFO] HTTP Request: GET http://127.0.0.1:39631/xhttp-siz10/0a44d93e-11c6-2c43-ea2b-60875e918f75/stream-live "HTTP/1.1 200 OK"
+2026-10-09 20:18:52,547 [INFO] connect XHTTP[stream-up] [stream-l] -> 127.0.0.1:33389
+2026-10-09 20:18:52,551 [INFO] HTTP Request: POST http://127.0.0.1:39631/xhttp-siz10/0a44d93e-11c6-2c43-ea2b-60875e918f75/stream-live "HTTP/1.1 200 OK"
+2026-10-09 20:18:52,554 [INFO] closed XHTTP[stream-up] [stream-l] total=0
+ok
+test_every_short_prefix_is_incomplete (test_vless_parser.VlessParserTests.test_every_short_prefix_is_incomplete) ... ok
+test_full_header (test_vless_parser.VlessParserTests.test_full_header) ... ok
+test_ipv4 (test_vless_parser.VlessParserTests.test_ipv4) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 4.398s
+
+OK

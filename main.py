@@ -1,7 +1,9 @@
 import asyncio
 import json
+import copy
 import os
 import hashlib
+import hmac
 import secrets
 import time
 import aiofiles
@@ -13,8 +15,8 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect, Depends
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response, HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import httpx
 import logging
@@ -36,12 +38,21 @@ async def lifespan(app: FastAPI):
         limits=limits, timeout=timeout, follow_redirects=True,
     )
     await load_state()
+    if not AUTH["password_hash"]:
+        await http_client.aclose()
+        http_client = None
+        raise RuntimeError("Set ADMIN_PASSWORD before the first startup")
     await _tg_start_bot()
+    persistence_task = asyncio.create_task(periodic_save())
     log_activity("system", "سرور راه‌اندازی شد", "ok")
     logger.info(f"X4G v9.8 started on port {CONFIG['port']}")
     try:
         yield
     finally:
+        persistence_task.cancel()
+        await asyncio.gather(persistence_task, return_exceptions=True)
+        from xhttp_siz10 import shutdown_sessions
+        await shutdown_sessions()
         await save_state()
         await _tg_stop_bot()
         if http_client:
@@ -50,6 +61,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="X4G", docs_url=None, redoc_url=None, lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
 
 # ── Persistence ───────────────────────────────────────────────────────────────
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
@@ -86,13 +99,6 @@ CONFIG = {
     "host": os.environ.get("PUBLIC_HOST") or os.environ.get("RAILWAY_PUBLIC_DOMAIN", "localhost"),
 }
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 async def load_state():
     global LINKS, AUTH, SUBS
@@ -122,8 +128,8 @@ async def save_state():
         try:
             DATA_DIR.mkdir(parents=True, exist_ok=True)
             data = {
-                "links": dict(LINKS),
-                "subs": dict(SUBS),
+                "links": copy.deepcopy(LINKS),
+                "subs": copy.deepcopy(SUBS),
                 "password_hash": AUTH["password_hash"],
                 "saved_at": datetime.now().isoformat(),
             }
@@ -133,6 +139,11 @@ async def save_state():
             tmp.replace(DATA_FILE)
         except Exception as e:
             logger.warning(f"Could not save state: {e}")
+
+async def periodic_save():
+    while True:
+        await asyncio.sleep(30)
+        await save_state()
 
 # ── In-memory state ───────────────────────────────────────────────────────────
 connections: dict = {}
@@ -185,9 +196,27 @@ SESSION_COOKIE = "x4g_session"
 SESSION_TTL = 60 * 60 * 24 * 365
 
 def hash_password(pw: str) -> str:
-    return hashlib.sha256(f"{pw}{CONFIG['secret']}".encode()).hexdigest()
+    salt = secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac("sha256", pw.encode(), salt.encode(), 310000).hex()
+    return f"pbkdf2_sha256$310000${salt}${digest}"
 
-AUTH = {"password_hash": hash_password(os.environ.get("ADMIN_PASSWORD", "X4GKING"))}
+
+def verify_password(pw: str, stored: str) -> bool:
+    if stored.startswith("pbkdf2_sha256$"):
+        try:
+            _, rounds, salt, digest = stored.split("$")
+            actual = hashlib.pbkdf2_hmac("sha256", pw.encode(), salt.encode(), int(rounds)).hex()
+            return hmac.compare_digest(actual, digest)
+        except (ValueError, TypeError):
+            return False
+    # Preserve access to existing deployments; migrate after a successful login.
+    legacy = hashlib.sha256(f"{pw}{CONFIG['secret']}".encode()).hexdigest()
+    return bool(stored) and hmac.compare_digest(legacy, stored)
+
+LOGIN_ATTEMPTS = {}
+
+
+AUTH = {"password_hash": hash_password(os.environ["ADMIN_PASSWORD"]) if os.environ.get("ADMIN_PASSWORD") else ""}
 SESSIONS: dict = {}
 SESSIONS_LOCK = asyncio.Lock()
 
@@ -227,6 +256,9 @@ def get_host(request: Request | None = None) -> str:
     چون این همیشه دقیقاً همون دامنه‌ایه که کاربر واقعاً بهش وصل شده. متغیر محیطی
     PUBLIC_HOST (یا RAILWAY_PUBLIC_DOMAIN برای سازگاری) فقط به‌عنوان fallback استفاده می‌شه، چون گاهی موقع بالا اومدن
     کانتینر هنوز مقداردهی نشده و باعث می‌شد لینک‌ها گاهی با "localhost" ساخته بشن."""
+    configured_host = os.environ.get("PUBLIC_HOST") or os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+    if configured_host:
+        return configured_host
     if request is not None:
         h = request.headers.get("x-forwarded-host") or request.headers.get("host")
         if h:
@@ -427,13 +459,25 @@ async def subscription_all(request: Request, _=Depends(require_auth)):
 async def api_login(request: Request):
     body = await request.json()
     ip = client_ip(request)
-    if hash_password(str(body.get("password", ""))) != AUTH["password_hash"]:
+    now = time.monotonic()
+    attempts = [t for t in LOGIN_ATTEMPTS.get(ip, []) if now - t < 60]
+    if len(attempts) >= 10:
+        raise HTTPException(status_code=429, detail="Too many login attempts; retry in one minute")
+    if len(LOGIN_ATTEMPTS) >= 1024 and ip not in LOGIN_ATTEMPTS:
+        LOGIN_ATTEMPTS.pop(next(iter(LOGIN_ATTEMPTS)))
+    LOGIN_ATTEMPTS[ip] = attempts + [now]
+    password = str(body.get("password", ""))
+    if not verify_password(password, AUTH["password_hash"]):
         log_activity("auth", f"تلاش ورود ناموفق از {ip}", "err")
         raise HTTPException(status_code=401, detail="رمز عبور اشتباه است")
+    LOGIN_ATTEMPTS.pop(ip, None)
+    if not AUTH["password_hash"].startswith("pbkdf2_sha256$"):
+        AUTH["password_hash"] = hash_password(password)
+        await save_state()
     token = await create_session()
     log_activity("auth", f"ورود موفق به پنل از {ip}", "ok")
     resp = JSONResponse({"ok": True})
-    resp.set_cookie(SESSION_COOKIE, token, max_age=SESSION_TTL, httponly=True, samesite="lax", path="/")
+    resp.set_cookie(SESSION_COOKIE, token, max_age=SESSION_TTL, httponly=True, samesite="lax", secure=True, path="/")
     return resp
 
 @app.post("/api/logout")
@@ -450,11 +494,11 @@ async def api_me(request: Request):
 @app.post("/api/change-password")
 async def api_change_password(request: Request, token=Depends(require_auth)):
     body = await request.json()
-    if hash_password(str(body.get("current_password", ""))) != AUTH["password_hash"]:
+    if not verify_password(str(body.get("current_password", "")), AUTH["password_hash"]):
         raise HTTPException(status_code=400, detail="رمز فعلی اشتباه است")
     new = str(body.get("new_password", ""))
-    if len(new) < 4:
-        raise HTTPException(status_code=400, detail="رمز جدید باید حداقل ۴ کاراکتر باشد")
+    if len(new) < 12:
+        raise HTTPException(status_code=400, detail="رمز جدید باید حداقل ۱۲ کاراکتر باشد")
     AUTH["password_hash"] = hash_password(new)
     async with SESSIONS_LOCK:
         SESSIONS.clear()
@@ -800,7 +844,8 @@ app.add_api_websocket_route("/ws/{uuid}", websocket_tunnel_proxy)
 # This function is called by the startup hook below.
 def register_xhttp_router():
     from xhttp_siz10 import router as xhttp_router
-    app.include_router(xhttp_router)
+    if not any(getattr(route, "path", "") == "/xhttp-siz10/{uuid}/{session_id}" for route in app.routes):
+        app.include_router(xhttp_router)
 
 # Telegram bot imports are deferred until startup to avoid circular imports.
 async def _tg_start_bot():
@@ -816,12 +861,12 @@ _HOP = {"connection","keep-alive","proxy-authenticate","proxy-authorization",
         "te","trailers","transfer-encoding","upgrade","content-encoding","content-length"}
 
 @app.api_route("/proxy/{target_url:path}", methods=["GET","POST","PUT","DELETE","PATCH","HEAD","OPTIONS"])
-async def http_proxy(target_url: str, request: Request):
+async def http_proxy(target_url: str, request: Request, _=Depends(require_auth)):
     if not target_url.startswith("http"):
         target_url = "https://" + target_url
     try:
         body = await request.body()
-        headers = {k: v for k, v in request.headers.items() if k.lower() not in _HOP and k.lower() != "host"}
+        headers = {k: v for k, v in request.headers.items() if k.lower() not in _HOP and k.lower() not in {"host", "cookie", "authorization"}}
         resp = await http_client.request(method=request.method, url=target_url, headers=headers, content=body)
         stats["total_bytes"] += len(resp.content)
         stats["total_requests"] += 1
