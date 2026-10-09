@@ -3,8 +3,10 @@
 # تغییر: ثبت IP واقعی کلاینت (با احتساب هدر x-forwarded-for پشت پراکسی) در connections
 
 import asyncio
+from network import open_destination
 import os
 import secrets
+import uuid as uuidlib
 from datetime import datetime
 
 from fastapi import WebSocket, WebSocketDisconnect
@@ -41,32 +43,38 @@ def _need(data: bytes, pos: int, count: int):
         raise VLESSNeedMoreData("incomplete VLESS header")
 
 
-def parse_vless_header(chunk: bytes):
+def parse_vless_header(chunk: bytes, expected_uuid: str | None = None):
     """Parse a VLESS request header without assuming it arrives in one network read."""
     if not chunk:
         raise VLESSNeedMoreData("empty VLESS header")
     _need(chunk, 0, 1)
-    if chunk[0] != 1:
+    if chunk[0] != 0:
         raise ValueError(f"unsupported VLESS version: {chunk[0]}")
 
     pos = 1
     _need(chunk, pos, 16)
+    if expected_uuid is not None and chunk[pos:pos + 16] != uuidlib.UUID(expected_uuid).bytes:
+        raise ValueError("VLESS UUID does not match the authorized link")
     pos += 16
 
     _need(chunk, pos, 1)
     addon_len = chunk[pos]
     pos += 1
     _need(chunk, pos, addon_len + 1)
+    if addon_len:
+        raise ValueError("VLESS addons/flow are not supported")
     pos += addon_len
 
     command = chunk[pos]
     pos += 1
-    if command not in (1, 2, 3):
+    if command != 1:
         raise ValueError(f"unsupported VLESS command: {command}")
 
     _need(chunk, pos, 2)
     port = int.from_bytes(chunk[pos:pos + 2], "big")
     pos += 2
+    if port == 0:
+        raise ValueError("invalid destination port")
 
     _need(chunk, pos, 1)
     addr_type = chunk[pos]
@@ -112,6 +120,9 @@ async def check_and_use(uid: str, n: int) -> bool:
             return False
         if not is_link_allowed(link):
             return False
+        limit = link.get("limit_bytes", 0)
+        if limit > 0 and link.get("used_bytes", 0) + n > limit:
+            return False
         link["used_bytes"] += n
         stats["total_bytes"] += n
         hourly_traffic[now_ir().strftime("%H:00")] += n
@@ -144,8 +155,8 @@ async def relay_ws_to_tcp(ws: WebSocket, writer: asyncio.StreamWriter, conn_id: 
             pass
 
 async def relay_tcp_to_ws(ws: WebSocket, reader: asyncio.StreamReader, conn_id: str, uid: str):
-    first = True
     try:
+        await ws.send_bytes(b"\x00\x00")
         while True:
             data = await reader.read(RELAY_BUF)
             if not data:
@@ -155,9 +166,7 @@ async def relay_tcp_to_ws(ws: WebSocket, reader: asyncio.StreamReader, conn_id: 
                 break
             await throttle(uid, len(data))
             connections[conn_id]["bytes"] += len(data)
-            payload = (b"\x00\x00" + data) if first else data
-            first = False
-            await ws.send_bytes(payload)
+            await ws.send_bytes(data)
     except Exception:
         pass
 
@@ -191,6 +200,7 @@ async def websocket_tunnel(ws: WebSocket, uuid: str):
     logger.info(f"✅ WS [{conn_id}] uuid={uuid[:8]}… ip={ip} total={len(connections)}")
     log_activity("connection", f"اتصال جدید از {ip} (کانفیگ {link.get('label','?')})", "info")
     writer = None
+    relay_tasks = set()
 
     try:
         # Reverse proxies / clients are allowed to split the VLESS header across
@@ -213,7 +223,7 @@ async def websocket_tunnel(ws: WebSocket, uuid: str):
             header_buf.extend(part)
 
             try:
-                command, address, port, payload = parse_vless_header(bytes(header_buf))
+                command, address, port, payload = parse_vless_header(bytes(header_buf), uuid)
                 break
             except VLESSNeedMoreData:
                 if len(header_buf) > 64 * 1024:
@@ -222,7 +232,7 @@ async def websocket_tunnel(ws: WebSocket, uuid: str):
         logger.info(f"➡️  [{conn_id}] → {address}:{port}")
 
         reader, writer = await asyncio.wait_for(
-            asyncio.open_connection(address, port),
+            open_destination(address, port),
             timeout=float(os.environ.get("TCP_CONNECT_TIMEOUT", "15")),
         )
         sock = writer.transport.get_extra_info("socket")
@@ -241,13 +251,11 @@ async def websocket_tunnel(ws: WebSocket, uuid: str):
             writer.write(payload)
             await writer.drain()
 
-        done, pending = await asyncio.wait(
-            {
-                asyncio.create_task(relay_ws_to_tcp(ws, writer, conn_id, uuid)),
-                asyncio.create_task(relay_tcp_to_ws(ws, reader, conn_id, uuid)),
-            },
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+        relay_tasks = {
+            asyncio.create_task(relay_ws_to_tcp(ws, writer, conn_id, uuid)),
+            asyncio.create_task(relay_tcp_to_ws(ws, reader, conn_id, uuid)),
+        }
+        done, pending = await asyncio.wait(relay_tasks, return_when=asyncio.FIRST_COMPLETED)
         for t in pending:
             t.cancel()
             try:
@@ -267,6 +275,15 @@ async def websocket_tunnel(ws: WebSocket, uuid: str):
         error_logs.append({"error": str(exc), "time": datetime.now().isoformat()})
         logger.error(f"WS error [{conn_id}]: {exc}")
     finally:
+        for task in relay_tasks:
+            if not task.done():
+                task.cancel()
+        if relay_tasks:
+            await asyncio.gather(*relay_tasks, return_exceptions=True)
+        try:
+            await ws.close()
+        except Exception:
+            pass
         if writer:
             try:
                 writer.close()

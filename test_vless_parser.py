@@ -10,7 +10,7 @@ class VlessParserTests(unittest.TestCase):
         self.uid = uuid.uuid4().bytes
         host = b"example.com"
         self.header = (
-            bytes([1]) + self.uid + bytes([0]) + bytes([1]) +
+            bytes([0]) + self.uid + bytes([0]) + bytes([1]) +
             struct.pack(">H", 443) + bytes([2, len(host)]) + host +
             b"payload"
         )
@@ -30,7 +30,7 @@ class VlessParserTests(unittest.TestCase):
 
     def test_ipv4(self):
         h = (
-            bytes([1]) + self.uid + b"\0" + bytes([1]) +
+            bytes([0]) + self.uid + b"\0" + bytes([1]) +
             struct.pack(">H", 80) + bytes([1, 127, 0, 0, 1])
         )
         self.assertEqual(parse_vless_header(h)[1:3], ("127.0.0.1", 80))

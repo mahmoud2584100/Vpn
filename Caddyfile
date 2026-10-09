@@ -1,0 +1,6 @@
+{$PUBLIC_HOST} {
+    reverse_proxy app:8080 {
+        flush_interval -1
+        stream_close_delay 5m
+    }
+}
